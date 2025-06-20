@@ -1,5 +1,3 @@
-// /* eslint-disable @typescript-eslint/no-require-imports */
-// @ts-nocheck
 require('./instrument.js');
 const express = require('express');
 const http = require('http');
@@ -17,7 +15,6 @@ app.use(expressSanitizer());
 // HTTP server
 const httpServer = http.createServer(app);
 
-// const context = async ({ req }: any) => await new ContextValue().init(req);
 const typeDefs = `
   type Query {
     testSentry(input: TestSentryInput!): Boolean!

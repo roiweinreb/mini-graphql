@@ -1,6 +1,5 @@
 const Sentry = require('@sentry/node');
 
-// if (process.env.APP_ENV !== 'testing')
 Sentry.init({
   dsn: '', // INSERT DSN HERE
   environment: process.env.APP_ENV,
