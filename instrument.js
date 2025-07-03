@@ -1,7 +1,6 @@
 const Sentry = require('@sentry/node');
 
 Sentry.init({
-  environment: 'testing',
+  environment: 'mini-testing',
   includeLocalVariables: true,
-  debug: true,
 });
