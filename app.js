@@ -27,7 +27,7 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    testSentry: (args) => {
+    testSentry: (_obj, args) => {
       try {
         args.foo.map((x) => x);
         return true;
