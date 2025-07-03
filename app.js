@@ -5,6 +5,7 @@ const expressSanitizer = require('express-sanitizer');
 const { expressMiddleware } = require('@apollo/server/express4');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { ApolloServer } = require('@apollo/server');
+const { db, initializeDatabase } = require('./database.js');
 
 const Sentry = require('@sentry/node');
 
@@ -18,18 +19,36 @@ const httpServer = http.createServer(app);
 const typeDefs = `
   type Query {
     testSentry(input: TestSentryInput!): Boolean!
+    testDbError(input: TestDbErrorInput!): Boolean!
   }
 
   input TestSentryInput {
     foo: [String!]
   }
+
+  input TestDbErrorInput {
+    invalidQuery: String
+  }
 `;
+
+const addUser = async (user) => {
+  return await db('users').insert(user);
+};
 
 const resolvers = {
   Query: {
     testSentry: (_obj, args) => {
       try {
         args.foo.map((x) => x);
+        return true;
+      } catch (error) {
+        Sentry.captureException(error);
+        return false;
+      }
+    },
+    testDbError: async (_obj, args) => {
+      try {
+        await addUser({ foo: 'bar' });
         return true;
       } catch (error) {
         Sentry.captureException(error);
@@ -49,6 +68,7 @@ const createApolloServer = async (_) => {
 };
 
 (async () => {
+  await initializeDatabase();
   const apolloServer = await createApolloServer(httpServer);
   await apolloServer.start();
   app.use(expressMiddleware(apolloServer));
